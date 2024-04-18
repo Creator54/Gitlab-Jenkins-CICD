@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  gitlab:
+    image: 'gitlab/gitlab-ce:latest'
+    container_name: gitlab
+    restart: always
+    hostname: 'gitlab'
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://localhost:8000'
+    ports:
+      - '8000:8000'
+      - '8443:8443'
+      - '2222:22'
+    volumes:
+      - 'gitlab-config:/etc/gitlab'
+      - 'gitlab-logs:/var/log/gitlab'
+      - 'gitlab-data:/var/opt/gitlab'
+    # Gitlab admin: root
+    # Gitlab password: docker exec -it gitlab cat /etc/gitlab/initial_root_password
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    restart: always
+    hostname: 'jenkins'
+    ports:
+      - '8080:8080'
+      - '50000:50000'
+    volumes:
+      - 'jenkins_home:/var/jenkins_home'
+    environment:
+      JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"
+
+volumes:
+  gitlab-data:
+  gitlab-logs:
+  gitlab-config:
+  jenkins_home:
